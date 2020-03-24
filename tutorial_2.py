@@ -11,7 +11,7 @@ accuracy_2_features["Wybrane"] = get_accuracy_list(X_reduced_features, y)
 knn = KNeighborsClassifier(n_neighbors=4)
 num_feats = 4
 sfsForward = SFS(knn, k_features=num_feats, forward=False, n_jobs=-1)
-sfsForward = sfsForward.fit(X, Y)
+sfsForward = sfsForward.fit(X, Y) # po godzinie 1/100 obrazka
 features = [[1 if j + i*X.shape[0] not in sfsForward.k_feature_idx_ else 0 
              for i in range(X.shape[1])] 
                 for j in range(X.shape[0])]
@@ -27,6 +27,11 @@ for m in [100, 200, 500]:
     X_sfs = [1 if x in sfsForward.k_feature_idx_ else 0 for x in X_train]
     y_sfs = [1 if x in sfsForward.k_feature_idx_ else 0 for x in X_train]
     print(check_knn_accuracy(X_sfs, X_test, y_sfs, y_test, 4))
+
+# Przetransformować zbiory przy pomocy PCA z N-D do N-D. Jak wyglądają (obrazki) wektory własne odpowiadające największym wartością własnym. 
+# Sprawdzić, czy poprawił się wynik klasyfikacji. Dokonać wizualizacji 2-D przy pomocy PCA.
+TODO 
+
 
 # Usunąć m najmniej informatywnych cech PCA. Jak wygląda wynik klasyfikacji.
 m = 750
