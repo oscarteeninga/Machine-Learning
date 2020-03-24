@@ -8,14 +8,22 @@ accuracy_2_features["Wybrane"] = get_accuracy_list(X_reduced_features, y)
 
 # Teraz znajdź najmniej informatywne cechy (piksele) i zobrazuj je na rysunku. 
 # Możesz w tym celu użyć funkcji SFS (należy wybrać NAJMNIEJ informatywne cechy)
+def plot_mnist(data):
+    data = [i for i in data]
+    img = np.zeros((28,28), dtype=float)
+    for x in range(28):
+        for y in range(28):
+            img[y][x]=data[y*28+x]
+    plt.imshow(img)
+    
 knn = KNeighborsClassifier(n_neighbors=4)
-num_feats = 4
+num_feats = 775
 sfsForward = SFS(knn, k_features=num_feats, forward=False, n_jobs=-1)
-sfsForward = sfsForward.fit(X, Y) # po godzinie 1/100 obrazka
-features = [[1 if j + i*X.shape[0] not in sfsForward.k_feature_idx_ else 0 
-             for i in range(X.shape[1])] 
-                for j in range(X.shape[0])]
-plt.imshow(features)
+sfsForward = sfsForward.fit(X, Y)
+#print(sfsForward.k_feature_idx_)
+features = [1 if i not in sfsForward.k_feature_idx_ else 0 
+             for i in range(X.shape[1])]
+plot_mnist(features)
 
 # Dokonaj klasyfikacji k-nn na pełnym zbiorze i zbiorze bez m najmniej informatywnych cech. 
 # m = 100,200,500
