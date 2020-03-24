@@ -2,29 +2,39 @@
 check_knn_accuracy(X_train, X_test, y_train, y_test)
 
 #Testowany obrazek
-plt.imshow(X_train)
+def image_mnist(data):
+    data = [i for i in data]
+    img = np.zeros((28,28), dtype=float)
+    for x in range(28):
+        for y in range(28):
+            img[y][x]=data[y*28+x]
+    return img
+
+plt.imshow(image_mnist(X_train[8]))
 knn = KNeighborsClassifier(3)
 knn.fit(X_train, y_train)
 y_predicted = knn.predict(X_test)
-print(y_predicted)
 print(accuracy_score(y_test, y_predicted))
 
 # Przetestuj dokładność klasyfikatora, stosując binaryzację, np. pixele o odcieniu >=70 oznacz jako 1,
 # a pozostałe na 0
 #plt.imshow(X_train)
 binarized = [[1 if b > 70 else 0 for b in image] for image in X_train]
-plt.imshow(binarized)
+
 knn = KNeighborsClassifier(3)
 knn.fit(binarized, y_train)
 y_predicted = knn.predict(X_test)
-print(y_predicted)
+
+plot_mnist(binarized[8])
 print(accuracy_score(y_test, y_predicted))
 
 # Przetestuj dokładność klasyfikatora po dodaniu próbek zawierających szum
 #plt.imshow(X_train)
 noise = iaa.ImpulseNoise(0.15)
 noised = noise(images=[X_train])
-plt.imshow(noised[0])
+
+plot_mnist(noised[0][8])
+
 knn = KNeighborsClassifier(3)
 knn.fit(noised[0], y_train)
 y_predicted = knn.predict(X_test)
@@ -39,20 +49,45 @@ def printAccuracy(probe, img, train=y_train):
     knn = KNeighborsClassifier(3)
     knn.fit(img, train)
     y_predicted = knn.predict(X_test)
-    #print(y_predicted)
     print(probe, accuracy_score(y_test, y_predicted))
+
+
+def array_mnist(img):
+    return [img[i][j] for i in range(28) for j in range(28)]
+    
+#plt.imshow(image_mnist(X_train[8]))
 
 # No effect
 printAccuracy("Nothing", X_train, y_train)
+
 # Blur
-probe1 = blur(images=[X_train])
-printAccuracy("Blur", probe1[0])
+blur = iaa.GaussianBlur((0.5, 0.7))
+test_images = [image_mnist(i) for i in X_train]
+probe1 = blur(images=test_images)
+#plt.imshow(probe1[8])
+test_arrays = [array_mnist(i) for i in probe1]
+printAccuracy("Blur", test_arrays)
+
 # Rotation + Blur
-probe2 = rotate(images=[probe1[0]])
-printAccuracy("Rotatnion + Blur", probe2[0])
+rotate = iaa.Affine(rotate=(-10, 10))
+test_images = [image_mnist(i) for i in test_arrays]
+probe2 = blur(images=test_images)
+#plt.imshow(probe2[8])
+test_arrays = [array_mnist(i) for i in probe2]
+printAccuracy("Rotation + Blur", test_arrays)
+
 # Rotation + Blur + Crop
-probe3 = crop(images=[probe2[0]])
-printAccuracy("Rotation + Blur + Crop", probe3[0])
+crop = iaa.Crop(px=(1, 2))
+test_images = [image_mnist(i) for i in test_arrays]
+probe3 = crop(images=test_images)
+#plt.imshow(probe3[8])
+test_arrays = [array_mnist(i) for i in probe3]
+printAccuracy("Rotation + Blur + Crop", test_arrays)
+
 # Rotation + Blur + Crop + Noise
-probe4 = noise(images=[probe3[0]])
-printAccuracy("Rotation + Blur + Crop + Noise", probe4[0])
+noise = iaa.ImpulseNoise(0.1)
+test_images = [image_mnist(i) for i in test_arrays]
+probe4 = noise(images=test_images)
+plt.imshow(probe4[8])
+test_arrays = [array_mnist(i) for i in probe4]
+printAccuracy("Rotation + Blur + Crop + Noise", test_arrays)
