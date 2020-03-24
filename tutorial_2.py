@@ -25,7 +25,7 @@ for m in [100, 200, 500]:
     sfsForward = SFS(knn, k_features=(X.shape[1]-m), forward=True, n_jobs=-1)
     sfsForward = sfsForward.fit(X_train, t_train)
     X_sfs = [1 if x in sfsForward.k_feature_idx_ else 0 for x in X_train]
-    y_sfs = [1 if x in sfsForward.k_feature_idx_ else 0 for x in X_train]
+    y_sfs = [1 if x in sfsForward.k_feature_idx_ else 0 for x in Y_train]
     print(check_knn_accuracy(X_sfs, X_test, y_sfs, y_test, 4))
 
 # Przetransformować zbiory przy pomocy PCA z N-D do N-D. Jak wyglądają (obrazki) wektory własne odpowiadające największym wartością własnym. 
@@ -36,17 +36,18 @@ TODO
 # Usunąć m najmniej informatywnych cech PCA. Jak wygląda wynik klasyfikacji.
 m = 750
 X_train, X_test, y_train, y_test = train_test_split(mnist.data, mnist.target, 
-                                                        train_size=0.02, test_size=0.1, random_state=42)
-X_train_transform, X_test_transform = pca_transform_dataset(X_train, X_test, X.shape[1]-m)
+                            train_size=0.02, test_size=0.1, random_state=42)
+X_train_transform, X_test_transform = 
+                        pca_transform_dataset(X_train, X_test, X.shape[1]-m)
 accuracy = check_accuracy_knn(X_train_transform, X_test_transform, y_train, y_test, 3)
 print (accuracy)
 
 # Wybrac m NAJLEPSZYCH cech PCA. Jak wygląda teraz wynik klasyfikacji.
 m = 5
 X_train, X_test, y_train, y_test = train_test_split(mnist.data, mnist.target, 
-                                                        train_size=0.02, test_size=0.1, random_state=42)
-X_train_transform, X_test_transform = pca_transform_dataset(X_train, X_test, m)
-accuracy = check_accuracy_knn(X_train_transform, X_test_transform, y_train, y_test, 3)
+                            train_size=0.02, test_size=0.1, random_state=42)
+X_train_t, X_test_t = pca_transform_dataset(X_train, X_test, m)
+accuracy = check_accuracy_knn(X_train_t, X_test_t, y_train, y_test, 3)
 print (accuracy)
 
 # Wartość m w przypadku wyboru najgorszych cech ma być duże (dla N=784 jakieś m=500), 
@@ -67,6 +68,6 @@ m = 50
 flat_noise = X_train + flat_noise
 accuracy = check_accuracy_knn(X_train, X_test, y_train, y_test, 3)
 print("no PCA: ", accuracy)
-X_train_transform, X_test_transform = pca_transform_dataset(X_train, X_test, m)
-accuracy = check_accuracy_knn(X_train_transform, X_test_transform, y_train, y_test, 3)
+X_train_t, X_test_t = pca_transform_dataset(X_train, X_test, m)
+accuracy = check_accuracy_knn(X_train_t, X_test_t, y_train, y_test, 3)
 print("PCA: ", accuracy)
