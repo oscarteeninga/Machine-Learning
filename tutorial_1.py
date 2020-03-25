@@ -10,8 +10,6 @@ def image_mnist(data):
             img[y][x]=data[y*28+x]
     return img
 
-
-
 plt.imshow(image_mnist(X_train[8]))
 knn = KNeighborsClassifier(3)
 knn.fit(X_train, y_train)
@@ -31,8 +29,7 @@ plot_mnist(binarized[8])
 print(accuracy_score(y_test, y_predicted))
 
 # Przetestuj dokładność klasyfikatora po dodaniu próbek zawierających szum
-#plt.imshow(X_train)
-noise = iaa.ImpulseNoise(0.15)
+noise = iaa.ImpulseNoise(0.1)
 noised = noise(images=[X_train])
 
 plot_mnist(noised[0][8])
@@ -40,7 +37,6 @@ plot_mnist(noised[0][8])
 knn = KNeighborsClassifier(3)
 knn.fit(noised[0], y_train)
 y_predicted = knn.predict(X_test)
-print(y_predicted)
 print(accuracy_score(y_test, y_predicted))
 
 
@@ -66,7 +62,7 @@ def printImageAccuracy(probe, img_train, train=y_train):
 test_images = [image_mnist(i) for i in X_train]
 printImageAccuracy("Nothing", test_images, y_train)
 
-plt.imshow(test_images[8])
+#plt.imshow(test_images[8])
 
 # Blur
 blur = iaa.GaussianBlur((0.5, 0.7))
